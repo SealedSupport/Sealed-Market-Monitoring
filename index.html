@@ -3615,7 +3615,7 @@ function buildReportEmailHTML() {
   const periodNoun = periodType.includes('week') ? 'Weekly' : periodType.includes('month') ? 'Monthly' : 'Quarterly';
   const { current, previous, agencyRows, suburbRows } = computeReportStats(range);
 
-  const navy = '#132744', gold = '#c9a84c', goldLight = '#e8c97a', border = '#e2e6ed', muted = '#6b7280', text = '#1a1f2e', surface = '#f8f9fb', buxtonBg = '#fffaeb';
+  const navy = '#132744', gold = '#c9a84c', goldLight = '#e8c97a', blue = '#1a4a8a', border = '#e2e6ed', muted = '#6b7280', text = '#1a1f2e', surface = '#f8f9fb', buxtonBg = '#fffaeb';
 
   function th(label, right) {
     return '<th style="padding:9px 10px;background:' + surface + ';color:' + navy + ';font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:0.3px;text-align:' + (right ? 'right' : 'left') + ';border-bottom:2px solid ' + gold + ';font-family:Segoe UI,Arial,sans-serif">' + label + '</th>';
@@ -3706,7 +3706,7 @@ function buildReportEmailHTML() {
     // but frequently drops div background/border/padding, which is what made the
     // stat cards render pale and washed out when pasted.
     return '<td width="33.33%" valign="top" style="padding:6px;font-family:Segoe UI,Arial,sans-serif">'
-      + '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="' + surface + '" style="background-color:' + surface + ';border:1px solid ' + border + ';border-radius:8px"><tr><td style="padding:12px 14px">'
+      + '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="' + surface + '" style="background-color:' + surface + ';border:1px solid ' + border + ';border-top:3px solid ' + blue + ';border-radius:8px"><tr><td style="padding:12px 14px">'
       + '<table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td style="font-size:10px;text-transform:uppercase;letter-spacing:0.4px;color:' + muted + ';font-weight:700;padding-bottom:4px;font-family:Segoe UI,Arial,sans-serif">' + label + '</td></tr>'
       + '<tr><td style="font-size:20px;font-weight:800;color:' + navy + ';line-height:1;font-family:Segoe UI,Arial,sans-serif">' + value + '</td></tr>'
       + '<tr><td style="padding-top:5px;font-family:Segoe UI,Arial,sans-serif">' + fmtDeltaEmail(curr, prev, invert) + ' <span style="font-size:10px;color:' + muted + '">vs prior period</span></td></tr></table>'
