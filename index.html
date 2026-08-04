@@ -3352,8 +3352,9 @@ function computeReportStats(range) {
   }).filter(Boolean).sort((a,b) => b.sold - a.sold);
 
   // Sort itemized lists for display: most recent first
-  current.sold = [...current.sold].sort((a,b) => new Date(b.dateSold||0) - new Date(a.dateSold||0));
-  current.newListings = [...current.newListings].sort((a,b) => new Date(b.dateListed||0) - new Date(a.dateListed||0));
+  current.sold = [...current.sold].sort((a,b) => (parseAUDate(b.dateSold)||0) - (parseAUDate(a.dateSold)||0));
+  current.newListings = [...current.newListings].sort((a,b) => (parseAUDate(b.dateListed)||0) - (parseAUDate(a.dateListed)||0));
+  current.withdrawn = [...current.withdrawn].sort((a,b) => (withdrawDateOf(b)||0) - (withdrawDateOf(a)||0));
 
   return { current, previous, agencyRows, suburbRows };
 }
@@ -3471,6 +3472,15 @@ function renderReport() {
     { label: 'DOM', width: 10, right: true, value: r => r.dom ? r.dom + 'd' : '—' }
   ]);
 
+  const withdrawnTable = itemizedTable(current.withdrawn, [
+    { label: 'Address', width: 24, addr: true, value: r => r.address },
+    { label: 'Suburb', width: 14, value: r => r.suburb.charAt(0) + r.suburb.slice(1).toLowerCase() },
+    { label: 'Withdrawn Date', width: 16, right: true, value: r => r.withdrawnDate || r.dateSold || '—' },
+    { label: 'Listed Price', width: 16, right: true, value: r => r.priceMax ? fmtPrice(r.priceMax) : (r.priceMin ? fmtPrice(r.priceMin) : '—') },
+    { label: 'Agency', width: 20, value: r => r.agency || '—' },
+    { label: 'DOM', width: 10, right: true, value: r => r.dom ? r.dom + 'd' : '—' }
+  ]);
+
   function section(title, tableHtml) {
     return '<div class="rpt-section"><div class="rpt-hdr">' + title + '</div>' + tableHtml + '</div>';
   }
@@ -3486,6 +3496,7 @@ function renderReport() {
       + section('By Suburb', suburbTable)
       + section('Sold Properties', soldTable)
       + section('New Listings', listingsTable)
+      + section('Withdrawn Properties (' + current.withdrawn.length + ')', withdrawnTable)
       + section('Under Offer / Under Contract (' + current.underOffer.length + ')', underOfferTable)
       + '<div class="rpt-foot">Generated ' + new Date().toLocaleString('en-AU') + ' · Sealed Market Monitor</div>'
     + '</div>';
@@ -3552,6 +3563,18 @@ function buildReportPlainText() {
     ));
   } else {
     lines.push('No new listings recorded this period.');
+  }
+
+  lines.push('');
+  lines.push('WITHDRAWN PROPERTIES (' + current.withdrawn.length + ')');
+  if (current.withdrawn.length) {
+    current.withdrawn.forEach(r => lines.push(
+      '- ' + r.address + ', ' + (r.suburb.charAt(0)+r.suburb.slice(1).toLowerCase())
+      + ' — Withdrawn ' + (r.withdrawnDate || r.dateSold || '—') + ' · ' + firstListed(r)
+      + ' · DOM ' + (r.dom?r.dom+'d':'—') + ' · ' + (r.agency||'—') + focusTag(r)
+    ));
+  } else {
+    lines.push('No withdrawals recorded this period.');
   }
 
   lines.push('');
@@ -3659,6 +3682,15 @@ function buildReportEmailHTML() {
     { label: 'DOM', right: true, value: r => r.dom ? r.dom + 'd' : '—' }
   ], rowBg);
 
+  const withdrawnTableHtml = table(current.withdrawn, [
+    { label: 'Address', addr: true, value: r => r.address },
+    { label: 'Suburb', value: r => r.suburb.charAt(0) + r.suburb.slice(1).toLowerCase() },
+    { label: 'Withdrawn Date', right: true, value: r => r.withdrawnDate || r.dateSold || '—' },
+    { label: 'Listed Price', right: true, value: r => firstListed(r) },
+    { label: 'Agency', value: r => r.agency || '—' },
+    { label: 'DOM', right: true, value: r => r.dom ? r.dom + 'd' : '—' }
+  ], rowBg);
+
   const underOfferTableHtml = table(current.underOffer, [
     { label: 'Address', addr: true, value: r => r.address },
     { label: 'Suburb', value: r => r.suburb.charAt(0) + r.suburb.slice(1).toLowerCase() },
@@ -3703,6 +3735,7 @@ function buildReportEmailHTML() {
       + section('By Suburb', suburbTableHtml)
       + section('Sold Properties (' + current.sold.length + ')', soldTableHtml)
       + section('New Listings (' + current.newListings.length + ')', listingsTableHtml)
+      + section('Withdrawn Properties (' + current.withdrawn.length + ')', withdrawnTableHtml)
       + section('Under Offer / Under Contract (' + current.underOffer.length + ')', underOfferTableHtml)
       + '</table>'
       + '<div style="font-size:10px;color:' + muted + ';margin-top:18px;padding-top:12px;border-top:1px solid ' + border + ';font-family:Segoe UI,Arial,sans-serif">Generated ' + new Date().toLocaleString('en-AU') + ' &middot; Sealed Market Monitor</div>'
