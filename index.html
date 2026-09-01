@@ -519,7 +519,7 @@
         <h2>🎯 Buxton Hampton East — Competitor Intelligence</h2>
         <div class="buxton-grid">
           <div class="bstat"><div class="bl">Active Listings</div><div class="bv" id="bListed">—</div><div class="bs">Hampton East focus</div></div>
-          <div class="bstat"><div class="bl">Sold (3 months)</div><div class="bv" id="bSold">—</div><div class="bs">Confirmed sales</div></div>
+          <div class="bstat"><div class="bl" id="bSoldLbl">Sold (3 months)</div><div class="bv" id="bSold">—</div><div class="bs">Confirmed sales</div></div>
           <div class="bstat"><div class="bl">Avg Sold Price</div><div class="bv" id="bAvgSold" style="font-size:16px">—</div><div class="bs">Hampton East</div></div>
           <div class="bstat"><div class="bl">Avg DOM</div><div class="bv" id="bDOM">—</div><div class="bs">Days on market</div></div>
           <div class="bstat"><div class="bl">Avg Gap to Ask</div><div class="bv" id="bGap" style="font-size:16px">—</div><div class="bs">Sold vs max listed</div></div>
@@ -578,7 +578,7 @@
         <h2>🏠 Ray White — Competitor Intelligence</h2>
         <div class="buxton-grid">
           <div class="bstat"><div class="bl">Active Listings</div><div class="bv" id="rwListed">—</div><div class="bs">All suburbs</div></div>
-          <div class="bstat"><div class="bl">Sold</div><div class="bv" id="rwSold">—</div><div class="bs">Confirmed sales</div></div>
+          <div class="bstat"><div class="bl" id="rwSoldLbl">Sold</div><div class="bv" id="rwSold">—</div><div class="bs">Confirmed sales</div></div>
           <div class="bstat"><div class="bl">Avg Sold Price</div><div class="bv" id="rwAvgSold" style="font-size:16px">—</div><div class="bs">Known prices only</div></div>
           <div class="bstat"><div class="bl">Avg DOM</div><div class="bv" id="rwDOM">—</div><div class="bs">Days on market</div></div>
           <div class="bstat"><div class="bl">Avg Gap to Ask</div><div class="bv" id="rwGap" style="font-size:16px">—</div><div class="bs">Sold vs max listed</div></div>
@@ -639,7 +639,7 @@
         <h2>🏡 Jellis Craig — Competitor Intelligence</h2>
         <div class="buxton-grid">
           <div class="bstat"><div class="bl">Active Listings</div><div class="bv" id="jcListed">—</div><div class="bs">All suburbs</div></div>
-          <div class="bstat"><div class="bl">Sold</div><div class="bv" id="jcSold">—</div><div class="bs">Confirmed sales</div></div>
+          <div class="bstat"><div class="bl" id="jcSoldLbl">Sold</div><div class="bv" id="jcSold">—</div><div class="bs">Confirmed sales</div></div>
           <div class="bstat"><div class="bl">Avg Sold Price</div><div class="bv" id="jcAvgSold" style="font-size:16px">—</div><div class="bs">Known prices only</div></div>
           <div class="bstat"><div class="bl">Avg DOM</div><div class="bv" id="jcDOM">—</div><div class="bs">Days on market</div></div>
           <div class="bstat"><div class="bl">Avg Gap to Ask</div><div class="bv" id="jcGap" style="font-size:16px">—</div><div class="bs">Sold vs max listed</div></div>
@@ -2207,11 +2207,12 @@ function renderBuxton() {
   const branch = document.getElementById('bBranch').value;
   const status = document.getElementById('bStatus').value;
   const suburb = document.getElementById('bSuburb').value;
+  const bPeriodDays = document.getElementById('bDatePeriod').value;
 
-  // Stats always off Hampton East
+  // Stats always off Hampton East, now scoped to the selected Period
   const heRecs = records.filter(r=>r.isBuxton && /hampton/i.test(r.agency));
-  const heSold = heRecs.filter(r=>r.status==='Sold');
-  const heListed = heRecs.filter(r=>r.status==='Listed');
+  const heSold = heRecs.filter(r=>r.status==='Sold' && inDatePeriod(bPeriodDays, r.dateSold));
+  const heListed = heRecs.filter(r=>r.status==='Listed' && inDatePeriod(bPeriodDays, r.dateListed));
   const heDoms = heSold.filter(r=>r.dom>0).map(r=>r.dom);
   const avgDOM = heDoms.length ? Math.round(heDoms.reduce((a,b)=>a+b,0)/heDoms.length) : null;
   const gaps = heSold.map(r=>calcGap(r)).filter(g=>g!==null);
@@ -2219,13 +2220,16 @@ function renderBuxton() {
   const sps = heSold.map(r=>effectiveSoldPrice(r)).filter(p=>p!==null);
   const avgSold = sps.length ? Math.round(sps.reduce((a,b)=>a+b,0)/sps.length) : null;
 
+  const periodLabels = { thismonth:'This month', lastmonth:'Last month', '':'All time', '7':'Last week', '90':'Last 3 months' };
+  const periodLabel = periodLabels[bPeriodDays] !== undefined ? periodLabels[bPeriodDays] : 'Selected period';
+
   document.getElementById('bListed').textContent = heListed.length;
   document.getElementById('bSold').textContent = heSold.length;
+  document.getElementById('bSoldLbl').textContent = 'Sold (' + periodLabel.toLowerCase() + ')';
   document.getElementById('bAvgSold').textContent = avgSold ? fmtPrice(avgSold) : '—';
   document.getElementById('bDOM').textContent = avgDOM ? avgDOM+'d' : '—';
   document.getElementById('bGap').textContent = avgGap!=null ? (avgGap>=0?'+':'')+fmtPrice(avgGap) : '—';
 
-  const bPeriodDays = document.getElementById('bDatePeriod').value;
   let buxRecs = records.filter(r=>r.isBuxton);
   if (branch) buxRecs = buxRecs.filter(r=>r.agency.toLowerCase().includes(branch));
   if (status) buxRecs = buxRecs.filter(r=>r.status===status);
@@ -2381,8 +2385,8 @@ function renderRayWhite() {
   const rwPeriodDays = document.getElementById('rwDatePeriod').value;
 
   const allRW = records.filter(r => /ray\s*white/i.test(r.agency));
-  const rwSold = allRW.filter(r => r.status === 'Sold');
-  const rwListed = allRW.filter(r => r.status === 'Listed');
+  const rwSold = allRW.filter(r => r.status === 'Sold' && inDatePeriod(rwPeriodDays, r.dateSold));
+  const rwListed = allRW.filter(r => r.status === 'Listed' && inDatePeriod(rwPeriodDays, r.dateListed));
   const sps = rwSold.map(r => effectiveSoldPrice(r)).filter(p => p !== null);
   const avgSold = sps.length ? Math.round(sps.reduce((a,b)=>a+b,0)/sps.length) : null;
   const doms = rwSold.filter(r=>r.dom>0).map(r=>r.dom);
@@ -2390,8 +2394,12 @@ function renderRayWhite() {
   const gaps = rwSold.map(r=>calcGap(r)).filter(g=>g!==null);
   const avgGap = gaps.length ? Math.round(gaps.reduce((a,b)=>a+b,0)/gaps.length) : null;
 
+  const rwPeriodLabels = { thismonth:'This month', lastmonth:'Last month', '':'All time', '7':'Last week', '90':'Last 3 months' };
+  const rwPeriodLabel = rwPeriodLabels[rwPeriodDays] !== undefined ? rwPeriodLabels[rwPeriodDays] : 'Selected period';
+
   document.getElementById('rwListed').textContent = rwListed.length;
   document.getElementById('rwSold').textContent = rwSold.length;
+  document.getElementById('rwSoldLbl').textContent = 'Sold (' + rwPeriodLabel.toLowerCase() + ')';
   document.getElementById('rwAvgSold').textContent = avgSold ? fmtPrice(avgSold) : '—';
   document.getElementById('rwDOM').textContent = avgDOM ? avgDOM+'d' : '—';
   document.getElementById('rwGap').textContent = avgGap!=null ? (avgGap>=0?'+':'')+fmtPrice(avgGap) : '—';
@@ -2453,8 +2461,8 @@ function renderJellisCraig() {
   const jcPeriodDays = document.getElementById('jcDatePeriod').value;
 
   const allJC = records.filter(r => /jellis\s*craig/i.test(r.agency));
-  const jcSold = allJC.filter(r => r.status === 'Sold');
-  const jcListed = allJC.filter(r => r.status === 'Listed');
+  const jcSold = allJC.filter(r => r.status === 'Sold' && inDatePeriod(jcPeriodDays, r.dateSold));
+  const jcListed = allJC.filter(r => r.status === 'Listed' && inDatePeriod(jcPeriodDays, r.dateListed));
   const sps = jcSold.map(r => effectiveSoldPrice(r)).filter(p => p !== null);
   const avgSold = sps.length ? Math.round(sps.reduce((a,b)=>a+b,0)/sps.length) : null;
   const doms = jcSold.filter(r=>r.dom>0).map(r=>r.dom);
@@ -2462,8 +2470,12 @@ function renderJellisCraig() {
   const gaps = jcSold.map(r=>calcGap(r)).filter(g=>g!==null);
   const avgGap = gaps.length ? Math.round(gaps.reduce((a,b)=>a+b,0)/gaps.length) : null;
 
+  const jcPeriodLabels = { thismonth:'This month', lastmonth:'Last month', '':'All time', '7':'Last week', '90':'Last 3 months' };
+  const jcPeriodLabel = jcPeriodLabels[jcPeriodDays] !== undefined ? jcPeriodLabels[jcPeriodDays] : 'Selected period';
+
   document.getElementById('jcListed').textContent = jcListed.length;
   document.getElementById('jcSold').textContent = jcSold.length;
+  document.getElementById('jcSoldLbl').textContent = 'Sold (' + jcPeriodLabel.toLowerCase() + ')';
   document.getElementById('jcAvgSold').textContent = avgSold ? fmtPrice(avgSold) : '—';
   document.getElementById('jcDOM').textContent = avgDOM ? avgDOM+'d' : '—';
   document.getElementById('jcGap').textContent = avgGap!=null ? (avgGap>=0?'+':'')+fmtPrice(avgGap) : '—';
