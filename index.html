@@ -1862,7 +1862,7 @@ function buildMainTable(rows, useBuxMode, useRWMode, useJCMode) {
       <td class="suburb-lbl" style="white-space:nowrap">${r.suburb}</td>
       <td>${agDisplay}</td>
       <td class="editable-cell" data-field="dateListed" data-key="${r.key}">${activeEditMode?mkInput(r.key,'dateListed',r.dateListed,'dd mmm yyyy'):staticCell(r.dateListed)}</td>
-      <td class="editable-cell" data-field="dateSold" data-key="${r.key}">${activeEditMode?mkInput(r.key,'dateSold',r.dateSold,'dd mmm yyyy'):staticCell(r.dateSold)}</td>
+      <td class="editable-cell" data-field="dateSold" data-key="${r.key}">${activeEditMode?mkInput(r.key,'dateSold',r.dateSold,'dd mmm yyyy'):(r.status==='Withdrawn'&&r.dateSold?'<span style="color:var(--withdrawn);font-weight:600">'+r.dateSold+'</span><br><span style="font-size:9px;color:var(--withdrawn);text-transform:uppercase;letter-spacing:0.3px">Withdrawn</span>':staticCell(r.dateSold))}</td>
       <td class="editable-cell ${r.dom>0?domClass(r.dom):''}" data-field="dom" data-key="${r.key}">${activeEditMode?mkInput(r.key,'dom',r.dom>0?r.dom:'','days'):staticCell(r.dom>0?r.dom+'d':'')}</td>
       <td class="editable-cell method" data-field="listingType" data-key="${r.key}">${activeEditMode?mkInput(r.key,'listingType',r.listingType,'Auction / Private...'):staticCell(r.listingType)}</td>
       <td class="editable-cell" data-field="priceMinStr" data-key="${r.key}">${activeEditMode?mkInput(r.key,'priceMinStr',r.priceMin?r.priceMin.toLocaleString('en-AU'):'',' 000,000'):staticCell(r.priceMin?'$'+r.priceMin.toLocaleString('en-AU'):'')}</td>
