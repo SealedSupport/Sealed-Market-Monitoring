@@ -173,7 +173,7 @@
   /* Buxton panel */
   .buxton-panel { background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%); border-radius: 12px; padding: 20px 24px; margin-bottom: 22px; }
   .buxton-panel h2 { font-size: 14px; font-weight: 700; color: var(--gold-light); margin-bottom: 14px; }
-  .buxton-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; }
+  .buxton-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 14px; }
   .bstat { background: rgba(255,255,255,0.08); border-radius: 8px; padding: 12px 14px; }
   .bstat .bl { font-size: 10px; color: rgba(255,255,255,0.45); text-transform: uppercase; letter-spacing: 0.4px; font-weight: 700; }
   .bstat .bv { font-size: 20px; font-weight: 800; color: white; margin: 3px 0; line-height: 1; }
@@ -520,6 +520,7 @@
         <div class="buxton-grid">
           <div class="bstat"><div class="bl">Active Listings</div><div class="bv" id="bListed">—</div><div class="bs">Hampton East focus</div></div>
           <div class="bstat"><div class="bl" id="bSoldLbl">Sold (3 months)</div><div class="bv" id="bSold">—</div><div class="bs">Confirmed sales</div></div>
+          <div class="bstat"><div class="bl" id="bWithdrawnLbl">Withdrawn (3 months)</div><div class="bv" id="bWithdrawn" style="color:var(--withdrawn)">—</div><div class="bs">Off market, unsold</div></div>
           <div class="bstat"><div class="bl">Avg Sold Price</div><div class="bv" id="bAvgSold" style="font-size:16px">—</div><div class="bs">Hampton East</div></div>
           <div class="bstat"><div class="bl">Avg DOM</div><div class="bv" id="bDOM">—</div><div class="bs">Days on market</div></div>
           <div class="bstat"><div class="bl">Avg Gap to Ask</div><div class="bv" id="bGap" style="font-size:16px">—</div><div class="bs">Sold vs max listed</div></div>
@@ -579,6 +580,7 @@
         <div class="buxton-grid">
           <div class="bstat"><div class="bl">Active Listings</div><div class="bv" id="rwListed">—</div><div class="bs">All suburbs</div></div>
           <div class="bstat"><div class="bl" id="rwSoldLbl">Sold</div><div class="bv" id="rwSold">—</div><div class="bs">Confirmed sales</div></div>
+          <div class="bstat"><div class="bl" id="rwWithdrawnLbl">Withdrawn</div><div class="bv" id="rwWithdrawn" style="color:var(--withdrawn)">—</div><div class="bs">Off market, unsold</div></div>
           <div class="bstat"><div class="bl">Avg Sold Price</div><div class="bv" id="rwAvgSold" style="font-size:16px">—</div><div class="bs">Known prices only</div></div>
           <div class="bstat"><div class="bl">Avg DOM</div><div class="bv" id="rwDOM">—</div><div class="bs">Days on market</div></div>
           <div class="bstat"><div class="bl">Avg Gap to Ask</div><div class="bv" id="rwGap" style="font-size:16px">—</div><div class="bs">Sold vs max listed</div></div>
@@ -640,6 +642,7 @@
         <div class="buxton-grid">
           <div class="bstat"><div class="bl">Active Listings</div><div class="bv" id="jcListed">—</div><div class="bs">All suburbs</div></div>
           <div class="bstat"><div class="bl" id="jcSoldLbl">Sold</div><div class="bv" id="jcSold">—</div><div class="bs">Confirmed sales</div></div>
+          <div class="bstat"><div class="bl" id="jcWithdrawnLbl">Withdrawn</div><div class="bv" id="jcWithdrawn" style="color:var(--withdrawn)">—</div><div class="bs">Off market, unsold</div></div>
           <div class="bstat"><div class="bl">Avg Sold Price</div><div class="bv" id="jcAvgSold" style="font-size:16px">—</div><div class="bs">Known prices only</div></div>
           <div class="bstat"><div class="bl">Avg DOM</div><div class="bv" id="jcDOM">—</div><div class="bs">Days on market</div></div>
           <div class="bstat"><div class="bl">Avg Gap to Ask</div><div class="bv" id="jcGap" style="font-size:16px">—</div><div class="bs">Sold vs max listed</div></div>
@@ -2213,6 +2216,7 @@ function renderBuxton() {
   const heRecs = records.filter(r=>r.isBuxton && /hampton/i.test(r.agency));
   const heSold = heRecs.filter(r=>r.status==='Sold' && inDatePeriod(bPeriodDays, r.dateSold));
   const heListed = heRecs.filter(r=>r.status==='Listed' && inDatePeriod(bPeriodDays, r.dateListed));
+  const heWithdrawn = heRecs.filter(r=>r.status==='Withdrawn' && inDatePeriod(bPeriodDays, r.withdrawnDate || r.dateSold));
   const heDoms = heSold.filter(r=>r.dom>0).map(r=>r.dom);
   const avgDOM = heDoms.length ? Math.round(heDoms.reduce((a,b)=>a+b,0)/heDoms.length) : null;
   const gaps = heSold.map(r=>calcGap(r)).filter(g=>g!==null);
@@ -2226,6 +2230,8 @@ function renderBuxton() {
   document.getElementById('bListed').textContent = heListed.length;
   document.getElementById('bSold').textContent = heSold.length;
   document.getElementById('bSoldLbl').textContent = 'Sold (' + periodLabel.toLowerCase() + ')';
+  document.getElementById('bWithdrawn').textContent = heWithdrawn.length;
+  document.getElementById('bWithdrawnLbl').textContent = 'Withdrawn (' + periodLabel.toLowerCase() + ')';
   document.getElementById('bAvgSold').textContent = avgSold ? fmtPrice(avgSold) : '—';
   document.getElementById('bDOM').textContent = avgDOM ? avgDOM+'d' : '—';
   document.getElementById('bGap').textContent = avgGap!=null ? (avgGap>=0?'+':'')+fmtPrice(avgGap) : '—';
@@ -2387,6 +2393,7 @@ function renderRayWhite() {
   const allRW = records.filter(r => /ray\s*white/i.test(r.agency));
   const rwSold = allRW.filter(r => r.status === 'Sold' && inDatePeriod(rwPeriodDays, r.dateSold));
   const rwListed = allRW.filter(r => r.status === 'Listed' && inDatePeriod(rwPeriodDays, r.dateListed));
+  const rwWithdrawn = allRW.filter(r => r.status === 'Withdrawn' && inDatePeriod(rwPeriodDays, r.withdrawnDate || r.dateSold));
   const sps = rwSold.map(r => effectiveSoldPrice(r)).filter(p => p !== null);
   const avgSold = sps.length ? Math.round(sps.reduce((a,b)=>a+b,0)/sps.length) : null;
   const doms = rwSold.filter(r=>r.dom>0).map(r=>r.dom);
@@ -2400,6 +2407,8 @@ function renderRayWhite() {
   document.getElementById('rwListed').textContent = rwListed.length;
   document.getElementById('rwSold').textContent = rwSold.length;
   document.getElementById('rwSoldLbl').textContent = 'Sold (' + rwPeriodLabel.toLowerCase() + ')';
+  document.getElementById('rwWithdrawn').textContent = rwWithdrawn.length;
+  document.getElementById('rwWithdrawnLbl').textContent = 'Withdrawn (' + rwPeriodLabel.toLowerCase() + ')';
   document.getElementById('rwAvgSold').textContent = avgSold ? fmtPrice(avgSold) : '—';
   document.getElementById('rwDOM').textContent = avgDOM ? avgDOM+'d' : '—';
   document.getElementById('rwGap').textContent = avgGap!=null ? (avgGap>=0?'+':'')+fmtPrice(avgGap) : '—';
@@ -2463,6 +2472,7 @@ function renderJellisCraig() {
   const allJC = records.filter(r => /jellis\s*craig/i.test(r.agency));
   const jcSold = allJC.filter(r => r.status === 'Sold' && inDatePeriod(jcPeriodDays, r.dateSold));
   const jcListed = allJC.filter(r => r.status === 'Listed' && inDatePeriod(jcPeriodDays, r.dateListed));
+  const jcWithdrawn = allJC.filter(r => r.status === 'Withdrawn' && inDatePeriod(jcPeriodDays, r.withdrawnDate || r.dateSold));
   const sps = jcSold.map(r => effectiveSoldPrice(r)).filter(p => p !== null);
   const avgSold = sps.length ? Math.round(sps.reduce((a,b)=>a+b,0)/sps.length) : null;
   const doms = jcSold.filter(r=>r.dom>0).map(r=>r.dom);
@@ -2476,6 +2486,8 @@ function renderJellisCraig() {
   document.getElementById('jcListed').textContent = jcListed.length;
   document.getElementById('jcSold').textContent = jcSold.length;
   document.getElementById('jcSoldLbl').textContent = 'Sold (' + jcPeriodLabel.toLowerCase() + ')';
+  document.getElementById('jcWithdrawn').textContent = jcWithdrawn.length;
+  document.getElementById('jcWithdrawnLbl').textContent = 'Withdrawn (' + jcPeriodLabel.toLowerCase() + ')';
   document.getElementById('jcAvgSold').textContent = avgSold ? fmtPrice(avgSold) : '—';
   document.getElementById('jcDOM').textContent = avgDOM ? avgDOM+'d' : '—';
   document.getElementById('jcGap').textContent = avgGap!=null ? (avgGap>=0?'+':'')+fmtPrice(avgGap) : '—';
