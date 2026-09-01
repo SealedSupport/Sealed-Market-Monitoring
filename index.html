@@ -2056,6 +2056,9 @@ function updateField(key, field, val, input) {
     } else if (val !== 'Withdrawn') {
       rec.withdrawnDate = '';
     }
+  } else if (field === 'withdrawnDate') {
+    rec.withdrawnDate = val; rec._manualWithdrawnDate = true;
+    if (val) rec.dateSold = val;
   }
 
   if (val) input.classList.add('has-value');
@@ -2858,7 +2861,9 @@ function buildInsightsTable(rows, type) {
       + '<td style="font-weight:700;color:var(--navy)">' + r.address + '</td>'
       + '<td style="font-size:11px;color:var(--muted);white-space:nowrap">' + r.suburb + '</td>'
       + '<td>' + agDisplay + '</td>'
-      + '<td style="font-size:11px;white-space:nowrap">' + dateColValue(r) + '</td>'
+      + '<td style="font-size:11px;white-space:nowrap">' + (editModeInsights && type === 'withdrawn'
+          ? '<input class="edit-input has-value" data-key="' + r.key + '" data-field="withdrawnDate" value="' + (r.withdrawnDate || '').replace(/"/g,'&quot;') + '" placeholder="dd/mm/yyyy" onchange="liveUpdateField(this)" onfocus="this.select()" style="min-width:90px">'
+          : dateColValue(r)) + '</td>'
       + (type === 'new' ? '' : '<td class="' + domCls + '" style="font-weight:700">' + (domVal > 0 ? domVal + 'd' : '—') + '</td>')
       + '<td style="font-size:11px;white-space:nowrap">' + ownerTypeBadge(r.ownerType) + '</td>'
       + '<td style="font-size:11px;color:var(--muted)">' + (r.listingType||'—') + '</td>'
