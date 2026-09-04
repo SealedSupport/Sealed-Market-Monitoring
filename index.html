@@ -739,14 +739,8 @@
       <button class="ins-itab active" id="itab-aged" onclick="switchInsightTab('aged',this)" style="flex:1;padding:13px 10px;border:none;background:transparent;font-size:12px;font-weight:700;color:var(--price-drop);cursor:pointer;border-bottom:3px solid var(--price-drop);letter-spacing:0.2px;display:flex;align-items:center;justify-content:center;gap:7px">
         ⏱ Aged Listings <span id="itab-aged-cnt" style="background:var(--price-drop-bg);color:var(--price-drop);font-size:10px;padding:2px 7px;border-radius:20px">—</span>
       </button>
-      <button class="ins-itab" id="itab-new" onclick="switchInsightTab('new',this)" style="flex:1;padding:13px 10px;border:none;border-left:1px solid var(--border);background:transparent;font-size:12px;font-weight:700;color:var(--listed);cursor:pointer;border-bottom:3px solid transparent;letter-spacing:0.2px;display:flex;align-items:center;justify-content:center;gap:7px">
-        🆕 Current Listings <span id="itab-new-cnt" style="background:var(--listed-bg);color:var(--listed);font-size:10px;padding:2px 7px;border-radius:20px">—</span>
-      </button>
       <button class="ins-itab" id="itab-withdrawn" onclick="switchInsightTab('withdrawn',this)" style="flex:1;padding:13px 10px;border:none;border-left:1px solid var(--border);background:transparent;font-size:12px;font-weight:700;color:var(--withdrawn);cursor:pointer;border-bottom:3px solid transparent;letter-spacing:0.2px;display:flex;align-items:center;justify-content:center;gap:7px">
         ↩ Withdrawn <span id="itab-withdrawn-cnt" style="background:var(--withdrawn-bg);color:var(--withdrawn);font-size:10px;padding:2px 7px;border-radius:20px">—</span>
-      </button>
-      <button class="ins-itab" id="itab-sold" onclick="switchInsightTab('sold',this)" style="flex:1;padding:13px 10px;border:none;border-left:1px solid var(--border);background:transparent;font-size:12px;font-weight:700;color:var(--sold);cursor:pointer;border-bottom:3px solid transparent;letter-spacing:0.2px;display:flex;align-items:center;justify-content:center;gap:7px">
-        🏷 Recent Sold <span id="itab-sold-cnt" style="background:var(--sold-bg);color:var(--sold);font-size:10px;padding:2px 7px;border-radius:20px">—</span>
       </button>
     </div>
 
@@ -790,36 +784,6 @@
       </div>
     </div>
 
-    <!-- CURRENT LISTINGS -->
-    <div id="ipanel-new" class="ins-panel table-wrap" style="display:none;border-radius:0 0 12px 12px">
-      <div class="table-hdr" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
-        <div>
-          <h2 style="color:var(--listed)">🆕 Current Listings</h2>
-          <div style="font-size:11px;color:var(--muted);margin-top:2px" id="newListingsMonth"></div>
-        </div>
-        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-          <span class="flbl">Period</span>
-          <select id="iNewPeriod" onchange="renderInsights()" style="border:1px solid var(--border);border-radius:7px;padding:6px 10px;font-size:12px;background:white">
-            <option value="thismonth" selected>This month</option>
-            <option value="lastmonth">Last month</option>
-            <option value="90">Last 3 months</option>
-            <option value="">All time</option>
-          </select>
-          <span class="flbl">Owner Type</span>
-          <select id="iOwnerTypeNew" onchange="renderInsights()" style="border:1px solid var(--border);border-radius:7px;padding:6px 10px;font-size:12px;background:white">
-            <option value="" selected>All</option>
-            <option value="Owner Occupied">Owner Occupied</option>
-            <option value="Rented">Rented</option>
-          </select>
-          <span class="cnt" id="newCount">—</span>
-          <button class="btn btn-outline btn-sm" onclick="exportTableCSV('newTable','current_listings')" style="display:inline-flex;align-items:center;gap:4px">⬇ CSV</button>
-        </div>
-      </div>
-      <div id="newTable">
-        <div class="empty-state"><div class="icon">🆕</div><h3>No data</h3><p>Upload RP Data exports.</p></div>
-      </div>
-    </div>
-
     <!-- WITHDRAWN -->
     <div id="ipanel-withdrawn" class="ins-panel table-wrap" style="display:none;border-radius:0 0 12px 12px">
       <div class="table-hdr" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
@@ -856,36 +820,6 @@
       </div>
       <div id="withdrawnTable">
         <div class="empty-state"><div class="icon">↩</div><h3>No data</h3><p>Upload RP Data exports.</p></div>
-      </div>
-    </div>
-
-    <!-- RECENT SOLD THIS MONTH -->
-    <div id="ipanel-sold" class="ins-panel table-wrap" style="display:none;border-radius:0 0 12px 12px">
-      <div class="table-hdr" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
-        <div>
-          <h2 style="color:var(--sold)">🏷 Recent Sold</h2>
-          <div style="font-size:11px;color:var(--muted);margin-top:2px" id="soldMonth"></div>
-        </div>
-        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-          <span class="flbl">Period</span>
-          <select id="iSoldPeriod" onchange="renderInsights()" style="border:1px solid var(--border);border-radius:7px;padding:6px 10px;font-size:12px;background:white">
-            <option value="thismonth" selected>This month</option>
-            <option value="lastmonth">Last month</option>
-            <option value="90">Last 3 months</option>
-            <option value="">All time</option>
-          </select>
-          <span class="flbl">Owner Type</span>
-          <select id="iOwnerTypeSold" onchange="renderInsights()" style="border:1px solid var(--border);border-radius:7px;padding:6px 10px;font-size:12px;background:white">
-            <option value="" selected>All</option>
-            <option value="Owner Occupied">Owner Occupied</option>
-            <option value="Rented">Rented</option>
-          </select>
-          <span class="cnt" id="soldCount">—</span>
-          <button class="btn btn-outline btn-sm" onclick="exportTableCSV('soldTable','recent_sold')" style="display:inline-flex;align-items:center;gap:4px">⬇ CSV</button>
-        </div>
-      </div>
-      <div id="soldTable">
-        <div class="empty-state"><div class="icon">🏷</div><h3>No data</h3><p>Upload RP Data exports.</p></div>
       </div>
     </div>
 
@@ -2737,31 +2671,6 @@ function renderInsights() {
     ? buildInsightsTable(aged, 'aged')
     : '<div class="empty-state"><div class="icon">✅</div><h3>No aged listings</h3><p>All active listings are under 60 days.</p></div>';
 
-  // ---- NEW / CURRENT LISTINGS ----
-  const newPeriod = document.getElementById('iNewPeriod') ? document.getElementById('iNewPeriod').value : 'thismonth';
-  const ownerTypeNew = document.getElementById('iOwnerTypeNew') ? document.getElementById('iOwnerTypeNew').value : '';
-  const newPeriodLabel = newPeriod === 'thismonth' ? monthName
-    : newPeriod === 'lastmonth' ? new Date(thisYear, thisMonth - 1, 1).toLocaleDateString('en-AU', {month:'long', year:'numeric'})
-    : newPeriod === '90' ? 'Last 3 months'
-    : 'All time';
-  document.getElementById('newListingsMonth').textContent = newPeriodLabel;
-  let newListings = records.filter(r => {
-    if (r.status !== 'Listed' && r.status !== 'Under Offer') return false;
-    if (!inSuburb(r)) return false;
-    if (ownerTypeNew && (r.ownerType||'') !== ownerTypeNew) return false;
-    return matchesPeriod(newPeriod, r.dateListed);
-  }).sort((a,b) => {
-    const da = parseDate(a.dateListed), db = parseDate(b.dateListed);
-    return (db||0) - (da||0);
-  });
-
-  document.getElementById('newCount').textContent = newListings.length + ' properties';
-  const newBadge = document.getElementById('itab-new-cnt');
-  if (newBadge) newBadge.textContent = newListings.length;
-  document.getElementById('newTable').innerHTML = newListings.length
-    ? buildInsightsTable(newListings, 'new')
-    : '<div class="empty-state"><div class="icon">🆕</div><h3>No new listings found</h3><p>No properties listed in ' + newPeriodLabel + '.</p></div>';
-
   // ---- WITHDRAWN — PERIOD FILTER ----
   const ownerTypeWithdrawn = document.getElementById('iOwnerTypeWithdrawn') ? document.getElementById('iOwnerTypeWithdrawn').value : '';
   const withdrawnPeriod = document.getElementById('iWithdrawnPeriod') ? document.getElementById('iWithdrawnPeriod').value : '90';
@@ -2805,29 +2714,6 @@ function renderInsights() {
     ? buildInsightsTable(withdrawn, 'withdrawn')
     : '<div class="empty-state"><div class="icon">↩</div><h3>No withdrawals found</h3><p>No withdrawn properties in this period. Use the Withdrawn Backfill upload on the Import tab to load historical data.</p></div>';
 
-  // ---- RECENT SOLD ----
-  const soldPeriod = document.getElementById('iSoldPeriod') ? document.getElementById('iSoldPeriod').value : 'thismonth';
-  const ownerTypeSold = document.getElementById('iOwnerTypeSold') ? document.getElementById('iOwnerTypeSold').value : '';
-  const soldPeriodLabel = soldPeriod === 'thismonth' ? monthName
-    : soldPeriod === 'lastmonth' ? new Date(thisYear, thisMonth - 1, 1).toLocaleDateString('en-AU', {month:'long', year:'numeric'})
-    : soldPeriod === '90' ? 'Last 3 months'
-    : 'All time';
-  document.getElementById('soldMonth').textContent = soldPeriodLabel;
-  let recentSold = records.filter(r => {
-    if (r.status !== 'Sold') return false;
-    if (!inSuburb(r)) return false;
-    if (ownerTypeSold && (r.ownerType||'') !== ownerTypeSold) return false;
-    return matchesPeriod(soldPeriod, r.dateSold);
-  }).sort((a, b) => {
-    const da = parseDate(a.dateSold), db = parseDate(b.dateSold);
-    return (db || 0) - (da || 0);
-  });
-  document.getElementById('soldCount').textContent = recentSold.length + ' properties';
-  const sBadge = document.getElementById('itab-sold-cnt');
-  if (sBadge) sBadge.textContent = recentSold.length;
-  document.getElementById('soldTable').innerHTML = recentSold.length
-    ? buildInsightsTable(recentSold, 'sold')
-    : '<div class="empty-state"><div class="icon">🏷</div><h3>No sales found</h3><p>No properties sold in ' + soldPeriodLabel + '.</p></div>';
 }
 
 function ownerTypeBadge(ot) {
