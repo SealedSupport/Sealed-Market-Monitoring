@@ -360,14 +360,14 @@
         <input type="file" accept=".csv" onchange="loadFile(this,'forSale')">
         <div class="upload-icon">📋</div>
         <h3>For Sale Export</h3>
-        <p>RP Data active listings CSV<br>All 9 suburbs · Active Listings Only<br>Upload every Monday</p>
+        <p>RP Data active listings CSV<br>All 9 suburbs · Active Listings Only<br>Upload every Wednesday</p>
         <div class="loaded-info" id="infoForSale"></div>
       </div>
       <div class="upload-card" id="cardSold" ondragover="dragOver(event,'cardSold')" ondragleave="dragLeave('cardSold')" ondrop="dropFile(event,'cardSold','sold')">
         <input type="file" accept=".csv" onchange="loadFile(this,'sold')">
         <div class="upload-icon">✅</div>
         <h3>Recently Sold Export</h3>
-        <p>RP Data sold listings CSV<br>Last 3 months · All suburbs<br>Upload every Monday</p>
+        <p>RP Data sold listings CSV<br>Last 3 months · All suburbs<br>Upload every Wednesday</p>
         <div class="loaded-info" id="infoSold"></div>
       </div>
     </div>
@@ -3153,10 +3153,11 @@ function getReportPeriodRange(type) {
   let start, end, prevStart, prevEnd, label;
 
   if (type === 'week' || type === 'lastweek') {
-    // Week runs Tuesday → Monday (report is sent every Tuesday EOD for the week just finished)
+    // Week runs Thursday → Wednesday (import happens every Wednesday, so the week
+    // just completed ends that Wednesday and reporting picks up the day after)
     const day = now.getDay(); // 0=Sun..6=Sat
-    const diffToTuesday = (day + 5) % 7; // days since most recent Tuesday (0 if today is Tuesday)
-    let weekStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() - diffToTuesday);
+    const diffToThursday = (day + 3) % 7; // days since most recent Thursday (0 if today is Thursday)
+    let weekStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() - diffToThursday);
     if (type === 'lastweek') weekStart.setDate(weekStart.getDate() - 7);
     start = weekStart;
     end = new Date(start); end.setDate(start.getDate() + 7);
